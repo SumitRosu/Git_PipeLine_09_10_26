@@ -8,12 +8,12 @@ on:
     paths:
       - "environment/preprod/**"
       - "module/**"
-      - ".github/workflows/terraform-preprod.yml"
+      - ".github/workflows/cicd.yaml"
 
   pull_request:
     branches:
       - main
-      - featurg**
+      - feature/**
 
   workflow_dispatch:
     inputs:
