@@ -8,6 +8,11 @@ rgs = {
     location = "centralus"
   }
 
+rg3 = {
+    name     = "sumrg3"
+    location = "centralus"
+  }
+
 }
 
 sds = {
