@@ -8,7 +8,7 @@ rgs = {
     location = "centralus"
   }
 
-rg3 = {
+rg5 = {
     name     = "sumrg3"
     location = "centralus"
   }
