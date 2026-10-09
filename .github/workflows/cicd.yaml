@@ -1,0 +1,84 @@
+name: Terraform PreProd CI-CD
+
+on:
+  push:
+    branches:
+      - main
+      - feature/**
+    paths:
+      - "environment/preprod/**"
+      - "module/**"
+      - ".github/workflows/terraform-preprod.yml"
+
+  pull_request:
+    branches:
+      - main
+      - featurg**
+
+  workflow_dispatch:
+    inputs:
+      apply_changes:
+        description: "Apply Terraform changes to Azure?"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TF_WORKING_DIR: environment/preprod
+  TF_IN_AUTOMATION: true
+
+jobs:
+  terraform:
+    name: Terraform CI-CD
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: environment/preprod
+
+    steps:
+      # 1. Checkout repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Install Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+
+      # 3. Check formatting
+      - name: Terraform Format
+        run: terraform fmt -check -recursive
+        working-directory: .
+
+      # 4. Authenticate with Azure using OIDC
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # 5. Initialize Terraform
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      # 6. Validate Terraform configuration
+      - name: Terraform Validate
+        run: terraform validate
+
+      # 7. Create execution plan
+      - name: Terraform Plan
+        run: terraform plan -input=false -out=tfplan
+
+      # 8. Apply only when manually requested
+      - name: Terraform Apply
+        if: >-
+          github.event_name == 'workflow_dispatch' &&
+          inputs.apply_changes == true
+        run: terraform apply -input=false -auto-approve tfplan
