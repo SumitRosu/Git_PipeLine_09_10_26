@@ -6,7 +6,7 @@ on:
       - main
       - feature/**
     paths:
-      - "environment/preprod/**"
+      - "enviroment/preprod/**"
       - "module/**"
       - ".github/workflows/cicd.yaml"
 
@@ -28,7 +28,7 @@ permissions:
   id-token: write
 
 env:
-  TF_WORKING_DIR: environment/preprod
+  TF_WORKING_DIR: enviroment/preprod
   TF_IN_AUTOMATION: true
 
 jobs:
@@ -38,7 +38,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: environment/preprod
+        working-directory: enviroment/preprod
 
     steps:
       # 1. Checkout repository
